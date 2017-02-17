@@ -1,0 +1,8 @@
+---
+- include: ganomede.generic.yml
+  vars:
+    name: events
+    version: v1.0.1
+    build_image: False
+    env:
+      POLL_TIMEOUT: "30000"

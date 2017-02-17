@@ -1,0 +1,6 @@
+---
+- include: ganomede.generic.yml
+  vars:
+    name: directory
+    version: v0.0.4
+    build_image: False

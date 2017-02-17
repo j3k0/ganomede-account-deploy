@@ -1,0 +1,77 @@
+---
+base_port: 20200
+config:
+
+  app_name: demo
+
+  new_relic:
+    license_key: ""
+
+  couchdb_proxy:
+    port: "{{ base_port + 10 }}"
+    cpu: 0.01
+    mem: 32
+    instances: 1
+  couchdb:
+    port: "{{ base_port + 1 }}" 
+    cpus: 0.01
+    mem: 128
+    hosts: [ "vagrant1", "vagrant2" ]
+
+  redis_proxy:
+    cpus: 0.01
+    mem: 32
+    instances: 1
+  redis_sentinels:
+    cpus: 0.01
+    mem: 32
+
+  redis:
+    auth:
+      private_port: "{{ base_port + 2 }}"
+      port:         "{{ base_port + 3 }}"
+      cpus: 0.01
+      mem:  32
+      hosts: [ "vagrant1", "vagrant2" ]
+    usermeta:
+      private_port: "{{ base_port + 4 }}"
+      port:         "{{ base_port + 5 }}"
+      cpus: 0.01
+      mem: 32
+      hosts: [ "vagrant1", "vagrant3" ]
+    data:
+      private_port: "{{ base_port + 6 }}"
+      port:         "{{ base_port + 7 }}"
+      cpus: 0.01
+      mem: 32
+      hosts: [ "vagrant2", "vagrant3" ]
+    events:
+      private_port: "{{ base_port + 8 }}"
+      port:         "{{ base_port + 9 }}"
+      cpus: 0.01
+      mem: 32
+      hosts: [ "vagrant1", "vagrant3" ]
+
+  ganomede:
+    api_secret: "demo1234"
+    data:
+      port: "{{ base_port + 11}}"
+      cpus: 0.01
+      mem: 64
+    avatars:
+      port: "{{ base_port + 12}}"
+      cpus: 0.01
+      mem: 64
+    usermeta:
+      port: "{{ base_port + 13}}"
+      cpus: 0.01
+      mem: 64
+    directory:
+      port: "{{ base_port + 14}}"
+      cpus: 0.01
+      mem: 64
+    events:
+      port: "{{ base_port + 15}}"
+      cpus: 0.01
+      mem: 64
+

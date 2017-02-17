@@ -1,0 +1,20 @@
+---
+- include: playbooks/ganomede.couchdb.yml index=0
+- include: playbooks/ganomede.couchdb.yml index=1
+
+- include: playbooks/ganomede.redis-proxy.yml
+- include: playbooks/ganomede.redis.yml index=0 db_name=auth
+- include: playbooks/ganomede.redis.yml index=1 db_name=auth
+- include: playbooks/ganomede.redis.yml index=0 db_name=usermeta
+- include: playbooks/ganomede.redis.yml index=1 db_name=usermeta
+- include: playbooks/ganomede.redis.yml index=0 db_name=data
+- include: playbooks/ganomede.redis.yml index=1 db_name=data
+- include: playbooks/ganomede.redis.yml index=0 db_name=events
+- include: playbooks/ganomede.redis.yml index=1 db_name=events
+- include: playbooks/ganomede.redis-sentinel.yml
+
+- include: playbooks/ganomede.data.yml
+- include: playbooks/ganomede.events.yml
+- include: playbooks/ganomede.directory.yml
+- include: playbooks/ganomede.usermeta.yml
+- include: playbooks/ganomede.avatars.yml

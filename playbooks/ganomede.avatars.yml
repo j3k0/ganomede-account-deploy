@@ -1,0 +1,6 @@
+---
+- include: ganomede.generic.yml
+  vars:
+    name: avatars
+    version: v1.0.7
+    build_image: False

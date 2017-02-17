@@ -1,0 +1,82 @@
+---
+- include: "ganomede-build-image.yml"
+  when: build_image
+
+- name: "Deploying ganomede.{{ name }}"
+  hosts: marathon-api-server
+  gather_facts: no
+  tags: [ "ganomede", "marathon", "ganomede_{{ name | mandatory }}" ]
+
+  vars:
+
+    app_name: "{{ config.app_name }}/ganomede/{{ name }}"
+    dns_domain: "{{ config.app_name.split('/') | reverse | join('.') }}.marathon.mesos"
+    redis_proxy_host: "redis-proxy.redis.{{ dns_domain }}"
+    couchdb_proxy_host: "couchdb-proxy.couchdb.{{ dns_domain }}"
+    marathon_wait_for_deployment: False
+
+    service_labels: "{{ labels | default({}) }}"
+    default_labels:
+      HAPROXY_GROUP: external
+      HAPROXY_0_PATH: /{{ name }}/v1
+      HAPROXY_0_VHOST: "{{ config.app_name.split('/') | reverse | join('.') }}.ganomede.local"
+
+    service_env: "{{ env | default({}) }}"
+    default_env:
+      NODE_ENV: "production"
+      HOST: "0.0.0.0"
+      PORT: "8000"
+      API_SECRET: "{{ config.ganomede.api_secret }}"
+      REDIS_AUTH_PORT_6379_TCP_ADDR: "{{redis_proxy_host}}"
+      REDIS_AUTH_PORT_6379_TCP_PORT: "{{config.redis.auth.port|string}}"
+      REDIS_USERMETA_PORT_6379_TCP_ADDR: "{{redis_proxy_host}}"
+      REDIS_USERMETA_PORT_6379_TCP_PORT: "{{config.redis.usermeta.port|string}}"
+      REDIS_DATA_PORT_6379_TCP_ADDR: "{{redis_proxy_host}}"
+      REDIS_DATA_PORT_6379_TCP_PORT: "{{config.redis.data.port|string}}"
+      REDIS_EVENTS_PORT_6379_TCP_ADDR: "{{redis_proxy_host}}"
+      REDIS_EVENTS_PORT_6379_TCP_PORT: "{{config.redis.events.port|string}}"
+      COUCH_DIRECTORY_PORT_5984_TCP_ADDR: "{{ docker_bip }}"
+      COUCH_DIRECTORY_PORT_5984_TCP_PORT: "{{ config.couchdb.port|string }}"
+      COUCH_DIRECTORY_DB_NAME: "{{ config.app_name.split('/') | join('-') }}-directory"
+      COUCH_DIRECTORY_VIEW_NAME: "directory0"
+      COUCH_DIRECTORY_SYNC: ""
+      COUCH_AVATARS_PORT_5984_TCP_ADDR: "{{ docker_bip }}"
+      COUCH_AVATARS_PORT_5984_TCP_PORT: "{{ config.couchdb.port|string }}"
+      COUCH_AVATARS_DB_NAME: "{{ config.app_name.split('/') | join('-') }}-avatars"
+      NEW_RELIC_LICENSE_KEY: "{{ config.new_relic.license_key }}"
+
+    service_build: "{{ build_image | default(False) }}"
+    service_image: "{{ image | default((service_build | ternary('ganomede-', 'ganomede/')) + name) }}"
+    service_version: "{{ config.ganomede[name].version | default(version) }}"
+
+  roles:
+  - role: topface.marathon_app
+    marathon_url: http://{{ inventory_hostname }}:8080
+    marathon_app:
+      id: /{{ app_name }}
+      container:
+        type: DOCKER
+        docker:
+          image: "{{ service_image }}:{{ service_version }}"
+          network: BRIDGE
+          portMappings:
+            - containerPort: 8000
+              hostPort: 0
+              servicePort: "{{ config.ganomede[name].port }}"
+              protocol: tcp
+      env: "{{ default_env | combine(service_env) }}"
+      instances: "{{ config.ganomede[name].instances | default(1) }}"
+      cpus: "{{ config.ganomede[name].cpus | default(0.5) }}"
+      mem: "{{ config.ganomede[name].mem | default(512) }}"
+      labels: "{{ default_labels | combine(service_labels) }}"
+      ports:
+        - 0
+      healthChecks:
+        - protocol: HTTP
+          path: /{{ name }}/v1/ping/marathon
+          portIndex: 0
+          gracePeriodSeconds: 60
+          maxConsecutiveFailures: 3
+          intervalSeconds: 5
+          timeoutSeconds: 5
+
