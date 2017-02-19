@@ -4,13 +4,14 @@
 
   vars:
     app_name: "{{ config.app_name }}/couchdb"
+    dns_domain: "{{ config.app_name.split('/') | reverse | join('.') }}.marathon.mesos"
     marathon_wait_for_deployment: False
 
     # index of the server to act on (0 or 1).
     # aimed at being specified on the command line.
     index: -1
 
-    couchdb_host: "{{ groups.couchdb[index|int] }}"
+    couchdb_host: "{{ config.couchdb.hosts[index|int] }}"
     couchdb_databases:
       - "{{ config.app_name.split('/') | join('-') }}-admin"
       - "{{ config.app_name.split('/') | join('-') }}-avatars"
@@ -33,8 +34,10 @@
       hour: 2
       minute: 0
       job: >
-        /usr/bin/curl -H "X-Marathon-App-ID: {{ marathon_app_id }}" -H "Content-Type: application/json" -X POST
-        "http://{{ hostvars[groups['marathon-lb-internal'][0]].tun0 }}:9091/{{ item }}/_compact"
+        /usr/bin/curl
+        -H "Content-Type: application/json"
+        -X POST
+        "http://couchdb-{{index}}.{{dns_domain}}:{{config.couchdb.port}}/{{item}}/_compact"
     with_items: "{{ couchdb_databases }}"
     tags: [ 'couchdb' ]
 
@@ -59,30 +62,25 @@
         type: DOCKER
         docker:
           image: jeko/couchdb:1.6.1
-          network: BRIDGE
-          portMappings:
-            - containerPort: 5984
-              servicePort: "{{ config.couchdb.port }}"
-              protocol: tcp
+          network: HOST
         volumes:
           - containerPath: /usr/local/var/lib/couchdb
             hostPath: /usr/local/{{ cluster_name }}/{{ app_name }}
             mode: RW
+      env:
+        COUCHDB_HTTP_PORT: "{{ config.couchdb.port }}"
+        COUCHDB_HTTP_BIND_ADDRESS: "{{ hostvars[couchdb_host].tun0 }}"
       instances: 1
       cpus: "{{ config.couchdb.cpus | default(0.1) }}"
       mem: "{{ config.couchdb.mem | default(256) }}"
-      ports:
-        - "{{ config.couchdb.port }}"
       healthChecks:
         - protocol: HTTP
-          portIndex: 0
+          port: "{{ config.couchdb.port }}"
           path: /
           gracePeriodSeconds: 120
           maxConsecutiveFailures: 3
           intervalSeconds: 20
           timeoutSeconds: 20
-      labels:
-        HAPROXY_GROUP: internal
       constraints:
         - [ "hostname", "CLUSTER", "{{ couchdb_host }}" ]
 

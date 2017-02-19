@@ -1,4 +1,5 @@
 ---
+- include: playbooks/ganomede.couchdb-proxy.yml
 - include: playbooks/ganomede.couchdb.yml index=0
 - include: playbooks/ganomede.couchdb.yml index=1
 
@@ -16,5 +17,5 @@
 - include: playbooks/ganomede.data.yml
 - include: playbooks/ganomede.events.yml
 - include: playbooks/ganomede.directory.yml
-- include: playbooks/ganomede.usermeta.yml
+#- include: playbooks/ganomede.usermeta.yml
 - include: playbooks/ganomede.avatars.yml
