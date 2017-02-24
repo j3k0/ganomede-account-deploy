@@ -5,6 +5,7 @@
 
   vars:
     app_name: "{{ config.app_name }}/redis/redis-sentinels"
+    dns_domain: "{{ config.app_name.split('/') | reverse | join('.') }}.marathon.mesos"
 
   roles:
   - role: topface.marathon_app
@@ -22,8 +23,8 @@
         for db in [ "auth", "usermeta", "events" ]
           %}{%
           if (config.redis[db].deploy | default(true))
-            %}{{ db }}:{{ config.redis[db].private_port }}:{{ config.redis[db].hosts|join(',') }}{%
-          endif %}{%
+            %}{{ db }}:{{ config.redis[db].private_port }}:{{ db }}-0.redis.{{ dns_domain }},{{ db }}-1.redis.{{ dns_domain }}{%
+          endif %} {%
         endfor %}
       env:
         QUORUM: "2"
