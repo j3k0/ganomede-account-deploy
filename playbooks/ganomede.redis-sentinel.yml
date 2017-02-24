@@ -18,11 +18,13 @@
           image: jeko/marathon-redis-sentinel:direct
           network: HOST
       cmd: >
-        /redis-sentinel-entrypoint.sh
-        auth:{{ config.redis.auth.private_port }}:{{ groups['mesos-slaves']|join(',') }}
-        data:{{ config.redis.data.private_port }}:{{ groups['mesos-slaves']|join(',') }}
-        usermeta:{{ config.redis.usermeta.private_port }}:{{ groups['mesos-slaves']|join(',') }}
-        events:{{ config.redis.events.private_port }}:{{ groups['mesos-slaves']|join(',') }}
+        /redis-sentinel-entrypoint.sh {%
+        for db in [ "auth", "usermeta", "events" ]
+          %}{%
+          if (config.redis[db].deploy | default(true))
+            %}{{ db }}:{{ config.redis[db].private_port }}:{{ config.redis[db].hosts|join(',') }}{%
+          endif %}{%
+        endfor %}
       env:
         QUORUM: "2"
         DOWN_AFTER_MS: "20000"
@@ -40,7 +42,7 @@
           intervalSeconds: 5
           timeoutSeconds: 5
       constraints:
-        - '{{ "hostname:UNIQUE".split(":") }}'
+        - [ "hostname", "UNIQUE" ]
       upgradeStrategy:
         minimumHealthCapacity: 0.5
         maximumOverCapacity: 0

@@ -13,10 +13,16 @@
     marathon_app:
       id: /{{ app_name }}
       cmd: >
-        /redis-lb-entrypoint
-        {% for db in [
-          "auth", "usermeta", "data", "events"
-        ] %} {{ config.redis[db].port }}:{% for host in groups['mesos-slaves'] %}{{ hostvars[host].tun0 }}:{{ config.redis[db].private_port }},{% endfor %}{% endfor %}
+        /redis-lb-entrypoint {%
+          for db in [ "auth", "usermeta", "events" ]
+            %} {{ config.redis[db].port }}:{%
+            for host in (config.redis[db].hosts | default([]))
+              %}{{ hostvars[host].tun0 }}:{{ config.redis[db].private_port }},{%
+            endfor %}{%
+            for host in (config.redis[db].external_hosts | default([]))
+              %}{{ host }},{%
+            endfor %}{%
+          endfor %}
       container:
         type: DOCKER
         docker:
@@ -30,7 +36,7 @@
       ports:
         - "{{ config.redis.auth.port }}"
         - "{{ config.redis.usermeta.port }}"
-        - "{{ config.redis.data.port }}"
         - "{{ config.redis.events.port }}"
       constraints:
         - [ "hostname", "UNIQUE" ]
+
