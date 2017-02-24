@@ -21,8 +21,8 @@
       env:
         # balance "first" prevents temporal incoherence when requests don't always reach the same server
         COUCHDB_BALANCE: first
-        COUCHDB_SERVERS: "{% for slave in groups['mesos-slaves'] %}{{hostvars[slave].tun0}}:{{config.couchdb.port}},{% endfor %}"
-        COUCHDB_BIND: "{{ tun0 }}:{{ config.couchdb_proxy.port }}"
+        COUCHDB_SERVERS: "{% if (config.couchdb.deploy|default(true)) %}{% for slave in groups['mesos-slaves'] %}{{hostvars[slave].tun0}}:{{config.couchdb.port}},{% endfor %}{% endif %}{% for external in (config.couchdb.external_hosts|default([])) %}{{ external }},{% endfor %}"
+        COUCHDB_BIND: "tun0:{{ config.couchdb_proxy.port }}"
       instances: "{{ config.couchdb_proxy.instances | default(1) }}"
       cpus: "{{ config.couchdb_proxy.cpus | default(0.1) }}"
       mem: "{{ config.couchdb_proxy.mem | default(64) }}"
