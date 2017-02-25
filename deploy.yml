@@ -1,39 +1,9 @@
 ---
-- include: playbooks/ganomede.couchdb-proxy.yml
-  when: (config.couchdb_proxy.deploy | default(true))
-
-- include: playbooks/ganomede.couchdb.yml index=0
-  when: (config.couchdb.deploy | default(true))
-- include: playbooks/ganomede.couchdb.yml index=1
-  when: (config.couchdb.deploy | default(true))
-
-- include: playbooks/ganomede.redis-proxy.yml
-  when: (config.redis_proxy.deploy | default(true))
-
-- include: playbooks/ganomede.redis.yml index=0 db_name=auth
-  when: (config.redis.auth.deploy | default(true))
-- include: playbooks/ganomede.redis.yml index=1 db_name=auth
-  when: (config.redis.auth.deploy | default(true))
-
-- include: playbooks/ganomede.redis.yml index=0 db_name=events
-  when: (config.redis.events.deploy | default(true))
-- include: playbooks/ganomede.redis.yml index=1 db_name=events
-  when: (config.redis.events.deploy | default(true))
-
-- include: playbooks/ganomede.redis.yml index=0 db_name=usermeta
-  when: (config.redis.usermeta.deploy | default(true))
-- include: playbooks/ganomede.redis.yml index=1 db_name=usermeta
-  when: (config.redis.usermeta.deploy | default(true))
-
-- include: playbooks/ganomede.redis-sentinel.yml
-  when: (config.redis_sentinels.deploy | default(true))
-
-- include: playbooks/ganomede.avatars.yml
-  when: (config.ganomede.avatars.deploy | default(true))
-
-- include: playbooks/ganomede.directory.yml
-  when: (config.ganomede.directory.deploy | default(true))
-
-- include: playbooks/ganomede.events.yml
-  when: (config.ganomede.events.deploy | default(true))
-
+- include: deploy-couchdb.yml
+- include: deploy-redis.db.yml db_name=auth
+- include: deploy-redis.db.yml db_name=events
+- include: deploy-redis.db.yml db_name=usermeta
+- include: deploy-redis.system.yml
+- include: deploy-service.yml name=avatars
+- include: deploy-service.yml name=directory
+- include: deploy-service.yml name=events

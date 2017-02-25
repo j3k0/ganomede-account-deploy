@@ -1,6 +1,6 @@
 ---
 - include: "ganomede-build-image.yml"
-  when: build_image
+  when: (definitions[name].build_image | default(false))
 
 - name: "Deploying ganomede.{{ name }}"
   hosts: marathon-api-server
@@ -15,37 +15,16 @@
     couchdb_proxy_host: "couchdb-proxy.{{ dns_domain }}"
     marathon_wait_for_deployment: False
 
-    service_labels: "{{ labels | default({}) }}"
+    service_labels: "{{ definitions[name].labels | default({}) }}"
     default_labels:
       HAPROXY_GROUP: "external"
       HAPROXY_0_PATH: "/{{ name }}/v1"
       HAPROXY_0_VHOST: "{{ config.vhost|string }}"
 
-    service_env: "{{ env | default({}) }}"
-    default_env:
-      NODE_ENV: "production"
-      HOST: "0.0.0.0"
-      PORT: "8000"
-      API_SECRET: "{{ config.ganomede.api_secret }}"
-      REDIS_AUTH_PORT_6379_TCP_ADDR: "{{ redis_proxy_host }}"
-      REDIS_AUTH_PORT_6379_TCP_PORT: "{{ config.redis.auth.port|string }}"
-      REDIS_USERMETA_PORT_6379_TCP_ADDR: "{{ redis_proxy_host }}"
-      REDIS_USERMETA_PORT_6379_TCP_PORT: "{{ config.redis.usermeta.port|string }}"
-      REDIS_EVENTS_PORT_6379_TCP_ADDR: "{{ redis_proxy_host }}"
-      REDIS_EVENTS_PORT_6379_TCP_PORT: "{{ config.redis.events.port|string }}"
-      COUCH_DIRECTORY_PORT_5984_TCP_ADDR: "{{ couchdb_proxy_host }}"
-      COUCH_DIRECTORY_PORT_5984_TCP_PORT: "{{ config.couchdb_proxy.port|string }}"
-      COUCH_DIRECTORY_DB_NAME: "{{ config.couchdb.directory.db_name }}"
-      COUCH_DIRECTORY_VIEW_NAME: "{{ config.couchdb.directory.view_name }}"
-      COUCH_DIRECTORY_SYNC: "{{ config.couchdb.directory.sync }}"
-      COUCH_AVATARS_PORT_5984_TCP_ADDR: "{{ couchdb_proxy_host }}"
-      COUCH_AVATARS_PORT_5984_TCP_PORT: "{{ config.couchdb_proxy.port|string }}"
-      COUCH_AVATARS_DB_NAME: "{{ config.couchdb.avatars.db_name|string }}"
-      NEW_RELIC_LICENSE_KEY: "{{ config.new_relic.license_key|string }}"
-
-    service_build: "{{ build_image | default(False) }}"
-    service_image: "{{ image | default((service_build | ternary('ganomede-', 'ganomede/')) + name) }}"
-    service_version: "{{ config.ganomede[name].version | default(version) }}"
+    service_env: "{{ definitions[name].env | default({}) }}"
+    service_build: "{{ definitions[name].build_image | default(False) }}"
+    service_image: "{{ definitions[name].image | default((service_build | ternary('ganomede-', 'ganomede/')) + name) }}"
+    service_version: "{{ config.ganomede[name].version | default(definitions[name].version) }}"
 
   roles:
   - role: topface.marathon_app
@@ -62,7 +41,7 @@
               hostPort: 0
               servicePort: "{{ config.ganomede[name].port }}"
               protocol: tcp
-      env: "{{ default_env | combine(service_env) }}"
+      env: "{{ shared_env | combine(service_env) }}"
       instances: "{{ config.ganomede[name].instances | default(1) }}"
       cpus: "{{ config.ganomede[name].cpus | default(0.5) }}"
       mem: "{{ config.ganomede[name].mem | default(512) }}"

@@ -1,0 +1,53 @@
+---
+
+- include: playbooks/ganomede.generic.yml
+
+  vars:
+
+    dns_domain: "{{ config.app_name.split('/') | reverse | join('.') }}.marathon.mesos"
+    redis_proxy_host: "redis-proxy.redis.{{ dns_domain }}"
+    couchdb_proxy_host: "couchdb-proxy.{{ dns_domain }}"
+
+    definitions:
+
+      avatars:
+        version: v1.0.7
+        env:
+          COUCH_AVATARS_PORT_5984_TCP_ADDR: "{{ couchdb_proxy_host }}"
+          COUCH_AVATARS_PORT_5984_TCP_PORT: "{{ config.couchdb_proxy.port|string }}"
+          COUCH_AVATARS_DB_NAME: "{{ config.couchdb.avatars.db_name|string }}"
+
+      events:
+        version: v1.0.2
+        env:
+          POLL_TIMEOUT: "30000"
+          REDIS_EVENTS_PORT_6379_TCP_ADDR: "{{ redis_proxy_host }}"
+          REDIS_EVENTS_PORT_6379_TCP_PORT: "{{ config.redis.events.port|string }}"
+
+      directory:
+        version: v0.1.1
+        env:
+          COUCH_DIRECTORY_PORT_5984_TCP_ADDR: "{{ couchdb_proxy_host }}"
+          COUCH_DIRECTORY_PORT_5984_TCP_PORT: "{{ config.couchdb_proxy.port|string }}"
+          COUCH_DIRECTORY_DB_NAME: "{{ config.couchdb.directory.db_name }}"
+          COUCH_DIRECTORY_VIEW_NAME: "{{ config.couchdb.directory.view_name }}"
+          COUCH_DIRECTORY_SYNC: "{{ config.couchdb.directory.sync }}"
+
+      data:
+        version: v0.1.2
+
+      usermeta:
+        env:
+          REDIS_USERMETA_PORT_6379_TCP_ADDR: "{{ redis_proxy_host }}"
+          REDIS_USERMETA_PORT_6379_TCP_PORT: "{{ config.redis.usermeta.port|string }}"
+
+    shared_env:
+      NODE_ENV: "production"
+      HOST: "0.0.0.0"
+      PORT: "8000"
+      API_SECRET: "{{ config.ganomede.api_secret }}"
+      REDIS_AUTH_PORT_6379_TCP_ADDR: "{{ redis_proxy_host }}"
+      REDIS_AUTH_PORT_6379_TCP_PORT: "{{ config.redis.auth.port|string }}"
+      NEW_RELIC_LICENSE_KEY: "{{ config.new_relic.license_key|string }}"
+
+  when: (config.ganomede[name].deploy | default(true))

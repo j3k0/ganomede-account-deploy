@@ -1,0 +1,8 @@
+---
+
+- include: playbooks/ganomede.redis-proxy.yml
+  when: (config.redis_proxy.deploy | default(true))
+
+- include: playbooks/ganomede.redis-sentinel.yml
+  when: (config.redis_sentinels.deploy | default(true))
+

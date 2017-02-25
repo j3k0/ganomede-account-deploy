@@ -6,7 +6,7 @@
   gather_facts: no
   tags: [ "ganomede", "setup", "ganomede_{{ name }}" ]
   vars:
-    service_version: "{{ config.ganomede[name].version | default(version) }}"
+    service_version: "{{ config.ganomede[name].version | default(definitions[name].version) }}"
     default_repo: git@github.com:j3k0/ganomede-{{ name }}.git
 
   tasks:
@@ -18,7 +18,7 @@
 
     - name: "Updating ganomede-{{name}} git"
       git:
-        repo: "{{ repo | default(default_repo) }}"
+        repo: "{{ definitions[name].repo | default(default_repo) }}"
         version: "{{ service_version }}"
         dest: build/ganomede-{{ name }}
       when: ganomede_generic_stat.stat.exists == False
@@ -51,7 +51,7 @@
   gather_facts: no
   tags: [ "ganomede", "setup", "ganomede_{{ name }}" ]
   vars:
-    service_version: "{{ config.ganomede[name].version | default(version) }}"
+    service_version: "{{ config.ganomede[name].version | default(definitions[name].version) }}"
     default_repo: git@github.com:j3k0/ganomede-{{ name }}.git
   tasks:
 
