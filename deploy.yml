@@ -32,4 +32,8 @@
   when: (config.ganomede.avatars.deploy | default(true))
 
 - include: playbooks/ganomede.directory.yml
+  when: (config.ganomede.directory.deploy | default(true))
+
 - include: playbooks/ganomede.events.yml
+  when: (config.ganomede.events.deploy | default(true))
+
