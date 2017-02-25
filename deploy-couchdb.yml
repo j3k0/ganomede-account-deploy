@@ -1,10 +1,10 @@
 ---
 
-- include: playbooks/ganomede.couchdb-proxy.yml
+- include: ganomede-playbooks/ganomede.couchdb-proxy.yml
   when: (config.couchdb_proxy.deploy | default(true))
 
-- include: playbooks/ganomede.couchdb.yml index=0
+- include: ganomede-playbooks/ganomede.couchdb.yml index=0
   when: (config.couchdb.deploy | default(true))
-- include: playbooks/ganomede.couchdb.yml index=1
+- include: ganomede-playbooks/ganomede.couchdb.yml index=1
   when: (config.couchdb.deploy | default(true))
 

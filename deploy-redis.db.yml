@@ -1,8 +1,8 @@
 ---
 
-- include: playbooks/ganomede.redis.yml index=0
+- include: ganomede-playbooks/ganomede.redis.yml index=0
   when: (config.redis[db_name].deploy | default(true))
 
-- include: playbooks/ganomede.redis.yml index=1
+- include: ganomede-playbooks/ganomede.redis.yml index=1
   when: (config.redis[db_name].deploy | default(true))
 

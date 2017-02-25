@@ -1,6 +1,6 @@
 ---
 
-- include: playbooks/ganomede.generic.yml
+- include: ganomede-playbooks/ganomede.generic.yml
 
   vars:
 

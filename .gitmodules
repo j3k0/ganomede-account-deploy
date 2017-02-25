@@ -1,0 +1,3 @@
+[submodule "ganomede-playbooks"]
+	path = ganomede-playbooks
+	url = git@github.com:j3k0/ganomede-playbooks.git
