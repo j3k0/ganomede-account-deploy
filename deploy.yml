@@ -20,9 +20,16 @@
 - include: playbooks/ganomede.redis.yml index=1 db_name=events
   when: (config.redis.events.deploy | default(true))
 
+- include: playbooks/ganomede.redis.yml index=0 db_name=usermeta
+  when: (config.redis.usermeta.deploy | default(true))
+- include: playbooks/ganomede.redis.yml index=1 db_name=usermeta
+  when: (config.redis.usermeta.deploy | default(true))
+
 - include: playbooks/ganomede.redis-sentinel.yml
   when: (config.redis_sentinels.deploy | default(true))
 
-- include: playbooks/ganomede.events.yml
-- include: playbooks/ganomede.directory.yml
 - include: playbooks/ganomede.avatars.yml
+  when: (config.ganomede.avatars.deploy | default(true))
+
+- include: playbooks/ganomede.directory.yml
+- include: playbooks/ganomede.events.yml
