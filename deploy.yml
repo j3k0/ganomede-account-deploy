@@ -1,9 +1,19 @@
 ---
 - include: deploy-couchdb.yml
+  vars:
+    couchdb_databases:
+      - directory
+
 - include: deploy-redis.db.yml db_name=auth
 - include: deploy-redis.db.yml db_name=events
 - include: deploy-redis.db.yml db_name=usermeta
 - include: deploy-redis.system.yml
+  vars:
+    redis_databases:
+      - auth
+      - events
+      - usermeta
+
 - include: deploy-service.yml name=avatars
 - include: deploy-service.yml name=directory
 - include: deploy-service.yml name=events
