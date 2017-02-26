@@ -16,7 +16,7 @@ Minimum resources per agent:
 
 ## What's in here?
 
-Playbook account.yml will deploy a account server comprised of:
+Playbook deploy.yml will deploy a account server comprised of:
 
  - ganomede-directory
  - ganomede-avatars
