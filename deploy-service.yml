@@ -25,7 +25,7 @@
           REDIS_EVENTS_PORT_6379_TCP_PORT: "{{ config.redis.events.port|string }}"
 
       directory:
-        version: v0.1.1
+        version: v0.2.0
         env:
           COUCH_DIRECTORY_PORT_5984_TCP_ADDR: "{{ couchdb_proxy_host }}"
           COUCH_DIRECTORY_PORT_5984_TCP_PORT: "{{ config.couchdb_proxy.port|string }}"
