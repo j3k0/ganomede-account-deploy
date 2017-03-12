@@ -16,7 +16,7 @@ Minimum resources per agent:
 
 ## What's in here?
 
-Playbook deploy.yml will deploy a account server comprised of:
+Playbook **deploy.yml** will deploy a account server comprised of:
 
  - ganomede-directory
  - ganomede-avatars
@@ -36,3 +36,4 @@ Playbook deploy.yml will deploy a account server comprised of:
  - Redis load-balancer
  - Redis sentinels -- 3 instances
 
+Services defaults are configured in **deploy-service.yml**. The user of this deployment setup can override values in its own config.
