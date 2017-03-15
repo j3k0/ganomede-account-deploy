@@ -20,14 +20,14 @@
           REDIS_AUTH_PORT_6379_TCP_PORT: "{{ config.redis.auth.port|string }}"
 
       events:
-        version: v1.0.2
+        version: v1.1.2
         env:
           POLL_TIMEOUT: "30000"
           REDIS_EVENTS_PORT_6379_TCP_ADDR: "{{ redis_proxy_host }}"
           REDIS_EVENTS_PORT_6379_TCP_PORT: "{{ config.redis.events.port|string }}"
 
       directory:
-        version: v0.3.1
+        version: v0.3.2
         env:
           COUCH_DIRECTORY_PORT_5984_TCP_ADDR: "{{ couchdb_proxy_host }}"
           COUCH_DIRECTORY_PORT_5984_TCP_PORT: "{{ config.couchdb_proxy.port|string }}"
@@ -41,6 +41,7 @@
         version: v0.1.2
 
       usermeta:
+        version: v1.2.1
         env:
           REDIS_USERMETA_PORT_6379_TCP_ADDR: "{{ redis_proxy_host }}"
           REDIS_USERMETA_PORT_6379_TCP_PORT: "{{ config.redis.usermeta.port|string }}"
@@ -50,9 +51,9 @@
       HOST: "0.0.0.0"
       PORT: "8000"
       API_SECRET: "{{ config.ganomede.api_secret }}"
-      DIRECTORY_PORT_8080_TCP_ADDR: "{{ config.ganomede.directory.external_host|default('marathon-lb-external.platform.marathon.mesos') }}"
-      DIRECTORY_PORT_8080_TCP_PORT: "{{ (config.ganomede.directory.external_port|default(config.ganomede.directory.port))|string }}"
-      DIRECTORY_PORT_8080_TCP_PROTOCOL: "{{ (config.ganomede.directory.external_protocol|default('http'))|string }}"
+      DIRECTORY_PORT_8000_TCP_ADDR: "{{ config.ganomede.directory.external_host|default('marathon-lb-external.platform.marathon.mesos') }}"
+      DIRECTORY_PORT_8000_TCP_PORT: "{{ (config.ganomede.directory.external_port|default(config.ganomede.directory.port))|string }}"
+      DIRECTORY_PORT_8000_TCP_PROTOCOL: "{{ (config.ganomede.directory.external_protocol|default('http'))|string }}"
       NEW_RELIC_LICENSE_KEY: "{{ config.new_relic.license_key|string }}"
 
   when: (config.ganomede[name].deploy | default(true))

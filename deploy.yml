@@ -18,3 +18,4 @@
 - include: deploy-service.yml name=avatars
 - include: deploy-service.yml name=directory
 - include: deploy-service.yml name=events
+- include: deploy-service.yml name=usermeta
