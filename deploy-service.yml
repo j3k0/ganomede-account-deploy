@@ -11,7 +11,7 @@
     definitions:
 
       avatars:
-        version: v1.0.7
+        version: v1.1.3
         env:
           COUCH_AVATARS_PORT_5984_TCP_ADDR: "{{ couchdb_proxy_host }}"
           COUCH_AVATARS_PORT_5984_TCP_PORT: "{{ config.couchdb_proxy.port|string }}"
