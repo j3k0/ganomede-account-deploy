@@ -20,7 +20,7 @@
           REDIS_AUTH_PORT_6379_TCP_PORT: "{{ config.redis.auth.port|string }}"
 
       directory:
-        version: v1.1.0
+        version: v1.1.3
         env:
           COUCH_DIRECTORY_PORT_5984_TCP_ADDR: "{{ couchdb_proxy_host }}"
           COUCH_DIRECTORY_PORT_5984_TCP_PORT: "{{ config.couchdb_proxy.port|string }}"
