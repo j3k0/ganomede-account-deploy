@@ -52,5 +52,8 @@
       DIRECTORY_PORT_8000_TCP_PORT: "{{ (config.ganomede.directory.external_port|default(config.ganomede.directory.port))|string }}"
       DIRECTORY_PORT_8000_TCP_PROTOCOL: "{{ (config.ganomede.directory.external_protocol|default('http'))|string }}"
       NEW_RELIC_LICENSE_KEY: "{{ config.new_relic.license_key|string }}"
+      STATSD_HOST: "{{ hostvars.sidekick.tun0 }}"
+      STATSD_PORT: "8125"
+      STATSD_PREFIX: "{{ (config.app_name | replace('-', '')).split('/') | join('.') }}.ganomede.{{ name }}."
 
   when: (config.ganomede[name].deploy | default(true))
