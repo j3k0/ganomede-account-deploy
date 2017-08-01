@@ -38,7 +38,7 @@
           REDIS_EVENTS_PORT_6379_TCP_PORT: "{{ config.redis.events.port|string }}"
 
       usermeta:
-        version: v1.2.1
+        version: v1.2.4
         env:
           REDIS_USERMETA_PORT_6379_TCP_ADDR: "{{ redis_proxy_host }}"
           REDIS_USERMETA_PORT_6379_TCP_PORT: "{{ config.redis.usermeta.port|string }}"
