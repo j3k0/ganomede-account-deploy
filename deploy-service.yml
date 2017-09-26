@@ -31,7 +31,7 @@
           REDIS_AUTH_PORT_6379_TCP_PORT: "{{ config.redis.auth.port|string }}"
 
       events:
-        version: v1.2.1
+        version: v1.3.0
         env:
           POLL_TIMEOUT: "50000"
           REDIS_EVENTS_PORT_6379_TCP_ADDR: "{{ redis_proxy_host }}"
